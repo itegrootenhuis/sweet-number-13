@@ -6,7 +6,10 @@ import AboutSection from '@/components/AboutSection'
 import Link from 'next/link'
 
 interface HomePageData {
-  heroImage?: {
+  heroImageDesktop?: {
+    asset?: any
+  }
+  heroImageMobile?: {
     asset?: any
   }
   heroTitle: string
@@ -28,7 +31,10 @@ async function getHomePageData(): Promise<HomePageData | null> {
   try {
     // Query for published documents (exclude drafts)
     const query = groq`*[_type == "homePage" && !(_id in path("drafts.**"))][0]{
-      heroImage{
+      heroImageDesktop{
+        asset
+      },
+      heroImageMobile{
         asset
       },
       heroTitle,
@@ -95,7 +101,8 @@ export default async function Home() {
   return (
     <div>
       <Hero
-        heroImage={data.heroImage}
+        heroImageDesktop={data.heroImageDesktop}
+        heroImageMobile={data.heroImageMobile}
         heroTitle={data.heroTitle || 'Welcome'}
         heroSubtitle={data.heroSubtitle || 'Sweet No. 13'}
         heroTextColor={data.heroTextColor}

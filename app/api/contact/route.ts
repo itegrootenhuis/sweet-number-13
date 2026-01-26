@@ -90,7 +90,6 @@ export async function POST(request: NextRequest) {
         {
           filename: imageFile.name,
           content: imageBase64,
-          type: imageFile.type,
         },
       ],
     })

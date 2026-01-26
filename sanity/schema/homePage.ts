@@ -6,13 +6,21 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
-      name: 'heroImage',
-      title: 'Hero Image',
+      name: 'heroImageDesktop',
+      title: 'Desktop Hero Image',
       type: 'image',
       options: {
         hotspot: true,
       },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'heroImageMobile',
+      title: 'Mobile Hero Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
     }),
     defineField({
       name: 'heroTitle',
