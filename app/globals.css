@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 47, 47, 47;
+  --background-start-rgb: 250, 250, 247;
+  --background-end-rgb: 250, 250, 247;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+}
+
+/* Custom prose styles for rich text */
+.prose {
+  @apply text-brand-textMuted;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  @apply text-brand-text font-bold;
+}
+
+.prose a {
+  @apply text-brand-primary hover:text-brand-coral transition-colors;
+}
+
+.prose strong {
+  @apply text-brand-text font-semibold;
+}
