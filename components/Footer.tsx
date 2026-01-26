@@ -47,7 +47,7 @@ export default async function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           {/* Logo - Left */}
-          <Link href="/" className="flex items-center justify-start">
+          <Link href="/" className="flex items-center justify-center md:justify-start">
             {settings.logo?.asset ? (
               <SanityImage
                 asset={settings.logo.asset}

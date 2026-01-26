@@ -23,7 +23,7 @@ export default function MobileMenu({
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden text-brand-text hover:text-brand-primary transition-colors"
+        className="md:hidden text-brand-text transition-colors"
         aria-label="Toggle menu"
       >
         <svg
@@ -44,12 +44,12 @@ export default function MobileMenu({
       </button>
 
       {isOpen && (
-        <nav className="absolute top-full left-0 right-0 bg-brand-surface border-t border-brand-muted/20 md:hidden z-50">
-          <div className="container mx-auto px-4 py-4 space-y-3">
+        <nav className="absolute top-full left-0 right-0 bg-brand-primary md:hidden z-50">
+          <div className="container mx-auto px-4 py-4 space-y-3 text-right">
             <Link
               href="/contact"
               onClick={() => setIsOpen(false)}
-              className="block text-brand-text hover:text-brand-coral transition-colors"
+              className="block text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors"
             >
               Contact Us
             </Link>
@@ -59,7 +59,7 @@ export default function MobileMenu({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 text-brand-text hover:text-brand-coral transition-colors"
+                className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
                 aria-label="Instagram"
               >
                 <FaInstagram className="w-5 h-5" />
@@ -72,7 +72,7 @@ export default function MobileMenu({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 text-brand-text hover:text-brand-coral transition-colors"
+                className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
                 aria-label="Facebook"
               >
                 <FaFacebook className="w-5 h-5" />
@@ -85,7 +85,7 @@ export default function MobileMenu({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 text-brand-text hover:text-brand-coral transition-colors"
+                className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
                 aria-label="Etsy"
               >
                 <FaEtsy className="w-5 h-5" />
@@ -98,7 +98,7 @@ export default function MobileMenu({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 text-brand-text hover:text-brand-coral transition-colors"
+                className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
                 aria-label="Pinterest"
               >
                 <FaPinterest className="w-5 h-5" />
