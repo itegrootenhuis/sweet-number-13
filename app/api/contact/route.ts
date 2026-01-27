@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resend } from '@/lib/resend'
+import { transporter } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,12 +38,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Convert image to base64 for email attachment
-    const imageBuffer = await imageFile.arrayBuffer()
-    const imageBase64 = Buffer.from(imageBuffer).toString('base64')
+    // Convert image to buffer for email attachment
+    const imageBuffer = Buffer.from(await imageFile.arrayBuffer())
 
-    // reCAPTCHA verification (commented out until domain is purchased)
-    /*
+    // reCAPTCHA verification
     const recaptchaToken = formData.get('g-recaptcha-response') as string
     if (!recaptchaToken) {
       return NextResponse.json(
@@ -67,9 +65,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    */
 
-    // Send email via Resend
+    // Send email via Nodemailer
     const emailHtml = `
       <h2>New Cookie Order Request</h2>
       <p><strong>Full Name:</strong> ${fullName}</p>
@@ -81,29 +78,25 @@ export async function POST(request: NextRequest) {
       <p>${description.replace(/\n/g, '<br>')}</p>
     `
 
-    const { data, error } = await resend.emails.send({
-      from: 'Sweet No. 13 <onboarding@resend.dev>', // Update with your verified domain
-      to: ['your-email@example.com'], // Update with recipient email
+    const recipientEmail = process.env.CONTACT_EMAIL || 'your-email@example.com'
+    const senderEmail = process.env.SMTP_USER || 'your-email@gmail.com'
+
+    const info = await transporter.sendMail({
+      from: `Sweet No. 13 <${senderEmail}>`,
+      to: recipientEmail,
       subject: `New Cookie Order Request from ${fullName}`,
       html: emailHtml,
       attachments: [
         {
           filename: imageFile.name,
-          content: imageBase64,
+          content: imageBuffer,
+          contentType: imageFile.type,
         },
       ],
     })
 
-    if (error) {
-      console.error('Resend error:', error)
-      return NextResponse.json(
-        { message: 'Failed to send email' },
-        { status: 500 }
-      )
-    }
-
     return NextResponse.json(
-      { message: 'Form submitted successfully', id: data?.id },
+      { message: 'Form submitted successfully', messageId: info.messageId },
       { status: 200 }
     )
   } catch (error) {

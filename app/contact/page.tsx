@@ -3,6 +3,8 @@ import { groq } from 'next-sanity'
 import { PortableText } from '@portabletext/react'
 import ContactForm from '@/components/ContactForm'
 
+export const dynamic = 'force-dynamic'
+
 interface ContactPageData {
   heading?: string
   content?: any[]

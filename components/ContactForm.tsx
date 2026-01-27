@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -15,10 +15,13 @@ const formSchema = z.object({
     z.number().min(1, 'Quantity must be at least 1'),
   ]),
   description: z.string().min(1, 'Description is required'),
-  image: z.instanceof(FileList).refine((files) => files.length > 0, 'Image is required'),
-}).refine((data) => {
-  if (data.image && data.image.length > 0) {
-    const file = data.image[0]
+  image: z.custom<FileList>((val) => {
+    if (typeof window === 'undefined') return true // Skip validation during SSR
+    return val instanceof FileList && val.length > 0
+  }, 'Image is required').refine((files) => {
+    if (typeof window === 'undefined') return true // Skip validation during SSR
+    if (!files || files.length === 0) return false
+    const file = files[0]
     const validTypes = ['image/png', 'image/jpeg', 'image/jpg']
     if (!validTypes.includes(file.type)) {
       return false
@@ -27,19 +30,32 @@ const formSchema = z.object({
     if (file.size < 500 * 1024) {
       return false
     }
-  }
-  return true
-}, {
-  message: 'Image must be PNG or JPG and at least 500KB',
-  path: ['image'],
+    return true
+  }, {
+    message: 'Image must be PNG or JPG and at least 500KB',
+  }),
 })
 
 type FormData = z.infer<typeof formSchema>
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (callback: () => void) => void
+      render: (container: HTMLElement, options: { sitekey: string }) => number
+      reset: (widgetId: number) => void
+      getResponse: (widgetId: number) => string
+    }
+  }
+}
 
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const recaptchaRef = useRef<HTMLDivElement>(null)
+  const recaptchaWidgetId = useRef<number | null>(null)
+  const recaptchaInitialized = useRef<boolean>(false)
 
   const {
     register,
@@ -61,12 +77,88 @@ export default function ContactForm() {
     }
   }, [selectedSize, currentQuantity, setValue])
 
+  // Load reCAPTCHA script
+  useEffect(() => {
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+    if (!siteKey || !recaptchaRef.current || recaptchaInitialized.current) return
+
+    // Check if script already exists
+    const existingScript = document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]')
+    
+    if (existingScript) {
+      // Script already loaded, just render the widget
+      if (window.grecaptcha && recaptchaRef.current && !recaptchaWidgetId.current) {
+        window.grecaptcha.ready(() => {
+          if (recaptchaRef.current && !recaptchaWidgetId.current) {
+            try {
+              recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+                sitekey: siteKey,
+              })
+              recaptchaInitialized.current = true
+            } catch (error) {
+              console.error('reCAPTCHA render error:', error)
+            }
+          }
+        })
+      }
+    } else {
+      // Script doesn't exist, create and load it
+      const script = document.createElement('script')
+      script.src = 'https://www.google.com/recaptcha/api.js'
+      script.async = true
+      script.defer = true
+      script.onload = () => {
+        if (window.grecaptcha && recaptchaRef.current && !recaptchaWidgetId.current) {
+          window.grecaptcha.ready(() => {
+            if (recaptchaRef.current && !recaptchaWidgetId.current) {
+              try {
+                recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+                  sitekey: siteKey,
+                })
+                recaptchaInitialized.current = true
+              } catch (error) {
+                console.error('reCAPTCHA render error:', error)
+              }
+            }
+          })
+        }
+      }
+      document.body.appendChild(script)
+    }
+
+    return () => {
+      // Cleanup widget on unmount
+      if (recaptchaWidgetId.current !== null && window.grecaptcha) {
+        try {
+          // Reset the widget instead of removing it
+          window.grecaptcha.reset(recaptchaWidgetId.current)
+        } catch (error) {
+          console.error('reCAPTCHA reset error:', error)
+        }
+      }
+      recaptchaWidgetId.current = null
+      recaptchaInitialized.current = false
+    }
+  }, [])
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     setSubmitStatus('idle')
     setErrorMessage('')
 
     try {
+      // Get reCAPTCHA token
+      const recaptchaToken = recaptchaWidgetId.current !== null && window.grecaptcha
+        ? window.grecaptcha.getResponse(recaptchaWidgetId.current)
+        : ''
+
+      if (!recaptchaToken) {
+        setSubmitStatus('error')
+        setErrorMessage('Please complete the reCAPTCHA verification')
+        setIsSubmitting(false)
+        return
+      }
+
       const formData = new FormData()
       formData.append('fullName', data.fullName)
       formData.append('dateNeeded', data.dateNeeded)
@@ -75,6 +167,7 @@ export default function ContactForm() {
       formData.append('quantity', String(data.quantity))
       formData.append('description', data.description)
       formData.append('image', data.image[0])
+      formData.append('g-recaptcha-response', recaptchaToken)
 
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -89,6 +182,10 @@ export default function ContactForm() {
       setSubmitStatus('success')
       // Reset form
       ;(document.getElementById('contact-form') as HTMLFormElement)?.reset()
+      // Reset reCAPTCHA
+      if (recaptchaWidgetId.current !== null && window.grecaptcha) {
+        window.grecaptcha.reset(recaptchaWidgetId.current)
+      }
     } catch (error) {
       setSubmitStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred')
@@ -239,11 +336,8 @@ export default function ContactForm() {
         )}
       </div>
 
-      {/* reCAPTCHA - Commented out until domain is purchased */}
-      {/* 
-      <div className="g-recaptcha" data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}></div>
-      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-      */}
+      {/* reCAPTCHA */}
+      <div ref={recaptchaRef}></div>
 
       {/* Submit Button */}
       <button
