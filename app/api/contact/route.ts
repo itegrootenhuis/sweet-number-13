@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
     // reCAPTCHA verification
     const recaptchaToken = formData.get('g-recaptcha-response') as string
     if (!recaptchaToken) {
+      console.error('reCAPTCHA: No token provided')
       return NextResponse.json(
         { message: 'reCAPTCHA verification failed' },
         { status: 400 }
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
 
     const recaptchaData = await recaptchaResponse.json()
     if (!recaptchaData.success || (recaptchaData.score !== undefined && recaptchaData.score < 0.5)) {
+      console.error('reCAPTCHA verification failed:', recaptchaData)
       return NextResponse.json(
         { message: 'reCAPTCHA verification failed' },
         { status: 400 }
@@ -79,7 +81,14 @@ export async function POST(request: NextRequest) {
     `
 
     const recipientEmail = process.env.CONTACT_EMAIL || 'your-email@example.com'
-    const senderEmail = process.env.SMTP_USER || 'your-email@gmail.com'
+    const senderEmail = process.env.SMTP_USER || 'your-email@outlook.com'
+
+    console.log('Attempting to send email...')
+    console.log('From:', senderEmail)
+    console.log('To:', recipientEmail)
+    console.log('SMTP_USER set:', !!process.env.SMTP_USER)
+    console.log('SMTP_PASSWORD set:', !!process.env.SMTP_PASSWORD)
+    console.log('CONTACT_EMAIL set:', !!process.env.CONTACT_EMAIL)
 
     const info = await transporter.sendMail({
       from: `Sweet No. 13 <${senderEmail}>`,
@@ -95,14 +104,28 @@ export async function POST(request: NextRequest) {
       ],
     })
 
+    console.log('Email sent successfully:', info.messageId)
+
     return NextResponse.json(
       { message: 'Form submitted successfully', messageId: info.messageId },
       { status: 200 }
     )
   } catch (error) {
     console.error('Contact form error:', error)
+    if (error instanceof Error) {
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+      if ((error as any).code) {
+        console.error('Error code:', (error as any).code)
+      }
+      if ((error as any).response) {
+        console.error('SMTP response:', (error as any).response)
+      }
+    }
     return NextResponse.json(
-      { message: 'An error occurred while processing your request' },
+      { 
+        message: error instanceof Error ? error.message : 'An error occurred while processing your request' 
+      },
       { status: 500 }
     )
   }

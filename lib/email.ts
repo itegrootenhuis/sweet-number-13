@@ -1,11 +1,16 @@
 import nodemailer from 'nodemailer'
 
-// Create reusable transporter using Gmail SMTP
+// Create reusable transporter using Outlook/Microsoft 365 SMTP
 export const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.office365.com',
+  port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.SMTP_USER, // Your Gmail address
-    pass: process.env.SMTP_PASSWORD, // Your Gmail App Password
+    user: process.env.SMTP_USER, // Your Outlook email address
+    pass: process.env.SMTP_PASSWORD, // Your Outlook password or App Password
+  },
+  tls: {
+    ciphers: 'SSLv3',
   },
 })
 
@@ -17,6 +22,10 @@ export async function verifyEmailConnection() {
     return true
   } catch (error) {
     console.error('Email server connection failed:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', error.message)
+      console.error('Error code:', (error as any).code)
+    }
     return false
   }
 }
