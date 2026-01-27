@@ -302,28 +302,6 @@ export default function ContactForm() {
         {isSubmitting ? 'Submitting...' : 'Submit'}
       </button>
 
-      {/* reCAPTCHA Badge - Required by Google for v3 */}
-      <div className="text-xs text-center text-brand-textMuted mt-2">
-        This site is protected by reCAPTCHA and the Google{' '}
-        <a
-          href="https://policies.google.com/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-brand-primary hover:text-brand-coral underline"
-        >
-          Privacy Policy
-        </a>
-        {' '}and{' '}
-        <a
-          href="https://policies.google.com/terms"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-brand-primary hover:text-brand-coral underline"
-        >
-          Terms of Service
-        </a>
-        {' '}apply.
-      </div>
 
       {/* Status Messages */}
       {submitStatus === 'success' && (
