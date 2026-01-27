@@ -82,7 +82,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sweetno13.com'
   
   return {
-    title: 'Home',
+    title: data?.heroTitle ? `${data.heroTitle} | Sweet No. 13` : 'Sweet No. 13 - Custom Decorated Cookies',
     description: data?.heroSubtitle || 'Custom decorated cookies and sweet treats. Order your personalized cookies for any occasion.',
     openGraph: {
       title: data?.heroTitle || 'Sweet No. 13',
