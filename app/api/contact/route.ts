@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     })
 
     const recaptchaData = await recaptchaResponse.json()
-    if (!recaptchaData.success) {
+    if (!recaptchaData.success || (recaptchaData.score !== undefined && recaptchaData.score < 0.5)) {
       return NextResponse.json(
         { message: 'reCAPTCHA verification failed' },
         { status: 400 }

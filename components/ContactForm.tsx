@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -41,10 +41,8 @@ type FormData = z.infer<typeof formSchema>
 declare global {
   interface Window {
     grecaptcha: {
-      ready: (callback: () => void) => void
-      render: (container: HTMLElement, options: { sitekey: string }) => number
-      reset: (widgetId: number) => void
-      getResponse: (widgetId: number) => string
+      ready: (callback: () => void) => Promise<void>
+      execute: (siteKey: string, options?: { action: string }) => Promise<string>
     }
   }
 }
@@ -53,9 +51,6 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
-  const recaptchaRef = useRef<HTMLDivElement>(null)
-  const recaptchaWidgetId = useRef<number | null>(null)
-  const recaptchaInitialized = useRef<boolean>(false)
 
   const {
     register,
@@ -77,68 +72,25 @@ export default function ContactForm() {
     }
   }, [selectedSize, currentQuantity, setValue])
 
-  // Load reCAPTCHA script
+  // Load reCAPTCHA v3 script
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-    if (!siteKey || !recaptchaRef.current || recaptchaInitialized.current) return
+    if (!siteKey) return
 
     // Check if script already exists
-    const existingScript = document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]')
+    const existingScript = document.querySelector(`script[src*="recaptcha/api.js?render=${siteKey}"]`)
     
     if (existingScript) {
-      // Script already loaded, just render the widget
-      if (window.grecaptcha && recaptchaRef.current && !recaptchaWidgetId.current) {
-        window.grecaptcha.ready(() => {
-          if (recaptchaRef.current && !recaptchaWidgetId.current) {
-            try {
-              recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
-                sitekey: siteKey,
-              })
-              recaptchaInitialized.current = true
-            } catch (error) {
-              console.error('reCAPTCHA render error:', error)
-            }
-          }
-        })
-      }
-    } else {
-      // Script doesn't exist, create and load it
-      const script = document.createElement('script')
-      script.src = 'https://www.google.com/recaptcha/api.js'
-      script.async = true
-      script.defer = true
-      script.onload = () => {
-        if (window.grecaptcha && recaptchaRef.current && !recaptchaWidgetId.current) {
-          window.grecaptcha.ready(() => {
-            if (recaptchaRef.current && !recaptchaWidgetId.current) {
-              try {
-                recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
-                  sitekey: siteKey,
-                })
-                recaptchaInitialized.current = true
-              } catch (error) {
-                console.error('reCAPTCHA render error:', error)
-              }
-            }
-          })
-        }
-      }
-      document.body.appendChild(script)
+      // Script already loaded
+      return
     }
 
-    return () => {
-      // Cleanup widget on unmount
-      if (recaptchaWidgetId.current !== null && window.grecaptcha) {
-        try {
-          // Reset the widget instead of removing it
-          window.grecaptcha.reset(recaptchaWidgetId.current)
-        } catch (error) {
-          console.error('reCAPTCHA reset error:', error)
-        }
-      }
-      recaptchaWidgetId.current = null
-      recaptchaInitialized.current = false
-    }
+    // Script doesn't exist, create and load it
+    const script = document.createElement('script')
+    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
+    script.async = true
+    script.defer = true
+    document.body.appendChild(script)
   }, [])
 
   const onSubmit = async (data: FormData) => {
@@ -147,14 +99,23 @@ export default function ContactForm() {
     setErrorMessage('')
 
     try {
-      // Get reCAPTCHA token
-      const recaptchaToken = recaptchaWidgetId.current !== null && window.grecaptcha
-        ? window.grecaptcha.getResponse(recaptchaWidgetId.current)
-        : ''
+      const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+      if (!siteKey) {
+        throw new Error('reCAPTCHA site key is not configured')
+      }
+
+      // Get reCAPTCHA v3 token
+      let recaptchaToken = ''
+      if (window.grecaptcha) {
+        await new Promise<void>((resolve) => {
+          window.grecaptcha.ready(() => resolve())
+        })
+        recaptchaToken = await window.grecaptcha.execute(siteKey, { action: 'submit' })
+      }
 
       if (!recaptchaToken) {
         setSubmitStatus('error')
-        setErrorMessage('Please complete the reCAPTCHA verification')
+        setErrorMessage('reCAPTCHA verification failed. Please try again.')
         setIsSubmitting(false)
         return
       }
@@ -182,10 +143,6 @@ export default function ContactForm() {
       setSubmitStatus('success')
       // Reset form
       ;(document.getElementById('contact-form') as HTMLFormElement)?.reset()
-      // Reset reCAPTCHA
-      if (recaptchaWidgetId.current !== null && window.grecaptcha) {
-        window.grecaptcha.reset(recaptchaWidgetId.current)
-      }
     } catch (error) {
       setSubmitStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred')
@@ -336,8 +293,7 @@ export default function ContactForm() {
         )}
       </div>
 
-      {/* reCAPTCHA */}
-      <div ref={recaptchaRef}></div>
+      {/* reCAPTCHA v3 is invisible - no div needed */}
 
       {/* Submit Button */}
       <button
