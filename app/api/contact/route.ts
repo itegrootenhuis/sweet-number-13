@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { transporter } from '@/lib/email'
+import { sendEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,8 +38,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Convert image to buffer for email attachment
+    // Convert image to base64 for SendGrid attachment
     const imageBuffer = Buffer.from(await imageFile.arrayBuffer())
+    const imageBase64 = imageBuffer.toString('base64')
 
     // reCAPTCHA verification
     const recaptchaToken = formData.get('g-recaptcha-response') as string
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send email via Nodemailer
+    // Send email via SendGrid
     const emailHtml = `
       <h2>New Cookie Order Request</h2>
       <p><strong>Full Name:</strong> ${fullName}</p>
@@ -81,33 +82,33 @@ export async function POST(request: NextRequest) {
     `
 
     const recipientEmail = process.env.CONTACT_EMAIL || 'your-email@example.com'
-    const senderEmail = process.env.SMTP_USER || 'your-email@outlook.com'
+    const senderEmail = process.env.FROM_EMAIL || recipientEmail
 
-    console.log('Attempting to send email...')
+    console.log('Attempting to send email via SendGrid...')
     console.log('From:', senderEmail)
     console.log('To:', recipientEmail)
-    console.log('SMTP_USER set:', !!process.env.SMTP_USER)
-    console.log('SMTP_PASSWORD set:', !!process.env.SMTP_PASSWORD)
+    console.log('SENDGRID_API_KEY set:', !!process.env.SENDGRID_API_KEY)
     console.log('CONTACT_EMAIL set:', !!process.env.CONTACT_EMAIL)
+    console.log('FROM_EMAIL set:', !!process.env.FROM_EMAIL)
 
-    const info = await transporter.sendMail({
-      from: `Sweet No. 13 <${senderEmail}>`,
+    const result = await sendEmail({
+      from: senderEmail, // Must be verified in SendGrid
       to: recipientEmail,
       subject: `New Cookie Order Request from ${fullName}`,
       html: emailHtml,
       attachments: [
         {
+          content: imageBase64,
           filename: imageFile.name,
-          content: imageBuffer,
-          contentType: imageFile.type,
+          type: imageFile.type,
         },
       ],
     })
 
-    console.log('Email sent successfully:', info.messageId)
+    console.log('Email sent successfully:', result.messageId)
 
     return NextResponse.json(
-      { message: 'Form submitted successfully', messageId: info.messageId },
+      { message: 'Form submitted successfully', messageId: result.messageId },
       { status: 200 }
     )
   } catch (error) {
@@ -119,7 +120,7 @@ export async function POST(request: NextRequest) {
         console.error('Error code:', (error as any).code)
       }
       if ((error as any).response) {
-        console.error('SMTP response:', (error as any).response)
+        console.error('SendGrid response:', (error as any).response.body)
       }
     }
     return NextResponse.json(
