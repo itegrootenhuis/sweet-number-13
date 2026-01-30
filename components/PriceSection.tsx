@@ -88,7 +88,7 @@ export default function PriceSection({ priceField1, priceField1Image, priceField
             href="/contact"
             className="inline-block bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coral/90 transition-colors shadow-soft"
           >
-            Contact Us
+            Coockie Inquiry
           </Link>
         </div>
       </div>

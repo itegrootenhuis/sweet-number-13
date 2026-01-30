@@ -11,36 +11,41 @@ export async function POST(request: NextRequest) {
     const size = formData.get('size') as string
     const quantity = formData.get('quantity') as string
     const description = formData.get('description') as string
-    const imageFile = formData.get('image') as File
+    const imageFile = formData.get('image') as File | null
 
-    // Validate required fields
-    if (!fullName || !dateNeeded || !occasion || !size || !quantity || !description || !imageFile) {
+    // Validate required fields (image is optional)
+    if (!fullName || !dateNeeded || !occasion || !size || !quantity || !description) {
       return NextResponse.json(
         { message: 'All fields are required' },
         { status: 400 }
       )
     }
 
-    // Validate image file
-    const validTypes = ['image/png', 'image/jpeg', 'image/jpg']
-    if (!validTypes.includes(imageFile.type)) {
-      return NextResponse.json(
-        { message: 'Image must be PNG or JPG' },
-        { status: 400 }
-      )
+    // Validate image file if provided (optional field)
+    let attachments: Array<{ content: string; filename: string; type: string }> | undefined
+    if (imageFile && imageFile.size > 0) {
+      const validTypes = ['image/png', 'image/jpeg', 'image/jpg']
+      if (!validTypes.includes(imageFile.type)) {
+        return NextResponse.json(
+          { message: 'Image must be PNG or JPG' },
+          { status: 400 }
+        )
+      }
+      if (imageFile.size < 500 * 1024) {
+        return NextResponse.json(
+          { message: 'Image must be at least 500KB' },
+          { status: 400 }
+        )
+      }
+      const imageBuffer = Buffer.from(await imageFile.arrayBuffer())
+      attachments = [
+        {
+          content: imageBuffer.toString('base64'),
+          filename: imageFile.name,
+          type: imageFile.type,
+        },
+      ]
     }
-
-    // Validate image size (minimum 500KB)
-    if (imageFile.size < 500 * 1024) {
-      return NextResponse.json(
-        { message: 'Image must be at least 500KB' },
-        { status: 400 }
-      )
-    }
-
-    // Convert image to base64 for SendGrid attachment
-    const imageBuffer = Buffer.from(await imageFile.arrayBuffer())
-    const imageBase64 = imageBuffer.toString('base64')
 
     // reCAPTCHA verification
     const recaptchaToken = formData.get('g-recaptcha-response') as string
@@ -96,13 +101,7 @@ export async function POST(request: NextRequest) {
       to: recipientEmail,
       subject: `New Cookie Order Request from ${fullName}`,
       html: emailHtml,
-      attachments: [
-        {
-          content: imageBase64,
-          filename: imageFile.name,
-          type: imageFile.type,
-        },
-      ],
+      ...(attachments?.length ? { attachments } : {}),
     })
 
     console.log('Email sent successfully:', result.messageId)

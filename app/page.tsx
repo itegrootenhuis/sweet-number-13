@@ -107,10 +107,7 @@ export default async function Home() {
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-3xl font-bold mb-4">Welcome to Sweet No. 13</h1>
         <p className="text-brand-textMuted mb-8">
-          Please configure your content in{' '}
-          <Link href="/studio" className="text-brand-primary hover:underline">
-            Sanity Studio
-          </Link>
+          Please configure your content in Sanity Studio (run the standalone studio from the <code className="bg-brand-primary/10 px-1 rounded">studio/</code> folder and deploy it separately).
         </p>
         <Link
           href="/contact"

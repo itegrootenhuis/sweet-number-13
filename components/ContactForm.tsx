@@ -15,25 +15,17 @@ const formSchema = z.object({
     z.number().min(1, 'Quantity must be at least 1'),
   ]),
   description: z.string().min(1, 'Description is required'),
-  image: z.custom<FileList>((val) => {
+  image: z.custom<FileList | undefined>((val) => {
     if (typeof window === 'undefined') return true // Skip validation during SSR
-    return val instanceof FileList && val.length > 0
-  }, 'Image is required').refine((files) => {
-    if (typeof window === 'undefined') return true // Skip validation during SSR
-    if (!files || files.length === 0) return false
-    const file = files[0]
+    if (val === undefined || val === null) return true // Optional
+    if (val instanceof FileList && val.length === 0) return true // Optional
+    if (!(val instanceof FileList) || val.length === 0) return true
+    const file = val[0]
     const validTypes = ['image/png', 'image/jpeg', 'image/jpg']
-    if (!validTypes.includes(file.type)) {
-      return false
-    }
-    // Check file size (500KB minimum = 500 * 1024 bytes)
-    if (file.size < 500 * 1024) {
-      return false
-    }
+    if (!validTypes.includes(file.type)) return false
+    if (file.size < 500 * 1024) return false // If provided, must be at least 500KB
     return true
-  }, {
-    message: 'Image must be PNG or JPG and at least 500KB',
-  }),
+  }, 'If provided, image must be PNG or JPG and at least 500KB').optional(),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -127,7 +119,9 @@ export default function ContactForm() {
       formData.append('size', data.size)
       formData.append('quantity', String(data.quantity))
       formData.append('description', data.description)
-      formData.append('image', data.image[0])
+      if (data.image?.length) {
+        formData.append('image', data.image[0])
+      }
       formData.append('g-recaptcha-response', recaptchaToken)
 
       const response = await fetch('/api/contact', {
@@ -279,7 +273,7 @@ export default function ContactForm() {
       {/* Image Upload */}
       <div>
         <label htmlFor="image" className="block text-sm font-medium text-brand-text mb-2">
-          Image Upload (PNG or JPG, minimum 500KB) <span className="text-red-500">*</span>
+          Image Upload (PNG or JPG, minimum 500KB) <span className="text-brand-textMuted font-normal">(optional)</span>
         </label>
         <input
           type="file"
