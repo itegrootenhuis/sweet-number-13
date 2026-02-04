@@ -1,15 +1,10 @@
 import Link from 'next/link'
 import { client } from '@/lib/sanity'
 import { groq } from 'next-sanity'
-import { FaInstagram, FaFacebook, FaEtsy, FaPinterest } from 'react-icons/fa'
-import SanityImage from './SanityImage'
+import { FaInstagram } from 'react-icons/fa'
 import MobileMenu from './MobileMenu'
 
 interface SiteSettings {
-  logo?: {
-    asset?: any
-    alt?: string
-  }
   instagramUrl?: string
   facebookUrl?: string
   etsyUrl?: string
@@ -19,10 +14,6 @@ interface SiteSettings {
 async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const query = groq`*[_type == "siteSettings"][0]{
-      logo{
-        asset,
-        alt
-      },
       instagramUrl,
       facebookUrl,
       etsyUrl,
@@ -41,76 +32,40 @@ export default async function Header() {
   const settings = await getSiteSettings()
 
   return (
-    <header className="bg-brand-primary border-b border-brand-muted/20 relative">
+    <header className="bg-brand-primary relative">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo - text only */}
           <Link href="/" className="flex items-center">
-            {settings.logo?.asset ? (
-              <SanityImage
-                asset={settings.logo.asset}
-                alt={settings.logo.alt || 'Sweet No. 13 Logo'}
-                width={150}
-                height={60}
-                className="h-12 w-auto"
-              />
-            ) : (
-              <span className="text-2xl font-bold italic text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
-                Sweet No. 13
-              </span>
-            )}
+            <span className="text-2xl font-bold italic text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
+              Sweet No. 13
+            </span>
           </Link>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-6">
             <Link
-              href="/contact"
+              href="/gallery"
               className="text-lg text-brand-text hover:text-brand-coral transition-colors"
             >
-              Contact Us
+              Gallery
+            </Link>
+            <Link
+              href="/cookie-inquiry"
+              className="text-lg text-brand-text hover:text-brand-coral transition-colors"
+            >
+              Cookie Inquiry
             </Link>
             {settings.instagramUrl && (
               <a
                 href={settings.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
-                aria-label="Instagram"
+                className="flex items-center gap-2 text-brand-text hover:text-brand-coral transition-colors"
+                aria-label="Follow us on Instagram"
               >
+                <span className="text-lg">Follow Us</span>
                 <FaInstagram className="w-6 h-6" />
-              </a>
-            )}
-            {settings.facebookUrl && (
-              <a
-                href={settings.facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
-                aria-label="Facebook"
-              >
-                <FaFacebook className="w-6 h-6" />
-              </a>
-            )}
-            {settings.etsyUrl && (
-              <a
-                href={settings.etsyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
-                aria-label="Etsy"
-              >
-                <FaEtsy className="w-6 h-6" />
-              </a>
-            )}
-            {settings.pinterestUrl && (
-              <a
-                href={settings.pinterestUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
-                aria-label="Pinterest"
-              >
-                <FaPinterest className="w-6 h-6" />
               </a>
             )}
           </nav>

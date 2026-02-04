@@ -1,8 +1,8 @@
 import { defineField, defineType } from 'sanity'
 
 export default defineType({
-  name: 'contactPage',
-  title: 'Contact Page',
+  name: 'cookieInquiryPage',
+  title: 'Cookie Inquiry Page',
   type: 'document',
   fields: [
     defineField({
@@ -25,7 +25,7 @@ export default defineType({
     },
     prepare({ title }) {
       return {
-        title: title || 'Contact Page',
+        title: title || 'Cookie Inquiry Page',
       }
     },
   },

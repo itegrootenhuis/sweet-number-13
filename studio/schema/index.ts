@@ -1,5 +1,6 @@
 import siteSettings from './siteSettings'
 import homePage from './homePage'
-import contactPage from './contactPage'
+import cookieInquiryPage from './cookieInquiryPage'
+import galleryPage from './galleryPage'
 
-export const schemaTypes = [siteSettings, homePage, contactPage]
+export const schemaTypes = [siteSettings, homePage, cookieInquiryPage, galleryPage]

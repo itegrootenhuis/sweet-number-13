@@ -7,6 +7,7 @@ import * as z from 'zod'
 
 const formSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
+  email: z.string().email('Valid email is required'),
   dateNeeded: z.string().min(1, 'Date is required'),
   occasion: z.string().min(1, 'Occasion is required'),
   size: z.string().min(1, 'Please select a size'),
@@ -57,9 +58,12 @@ export default function ContactForm() {
   const selectedSize = watch('size')
   const currentQuantity = watch('quantity')
 
-  // Auto-fill quantity when "Smaller sizes" is selected
+  // Auto-fill quantity when "Smaller sizes" or "Chunk Royale" is selected
   useEffect(() => {
-    if (selectedSize === 'Smaller sizes (must be a dozen)' && currentQuantity !== 'Sweet Dozen') {
+    if (
+      (selectedSize === 'Smaller sizes (must be a dozen)' || selectedSize === 'Chunk Royale') &&
+      currentQuantity !== 'Sweet Dozen'
+    ) {
       setValue('quantity', 'Sweet Dozen' as any)
     }
   }, [selectedSize, currentQuantity, setValue])
@@ -114,6 +118,7 @@ export default function ContactForm() {
 
       const formData = new FormData()
       formData.append('fullName', data.fullName)
+      formData.append('email', data.email)
       formData.append('dateNeeded', data.dateNeeded)
       formData.append('occasion', data.occasion)
       formData.append('size', data.size)
@@ -147,20 +152,39 @@ export default function ContactForm() {
 
   return (
     <form id="contact-form" onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto space-y-6">
-      {/* Full Name */}
-      <div>
-        <label htmlFor="fullName" className="block text-sm font-medium text-brand-text mb-2">
-          Full Name <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          id="fullName"
-          {...register('fullName')}
-          className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-        />
-        {errors.fullName && (
-          <p className="mt-1 text-sm text-red-500">{errors.fullName.message}</p>
-        )}
+      {/* Full Name and Email - Two Columns */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Full Name */}
+        <div>
+          <label htmlFor="fullName" className="block text-sm font-medium text-brand-text mb-2">
+            Full Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="fullName"
+            {...register('fullName')}
+            className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+          />
+          {errors.fullName && (
+            <p className="mt-1 text-sm text-red-500">{errors.fullName.message}</p>
+          )}
+        </div>
+
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-brand-text mb-2">
+            Email <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            {...register('email')}
+            className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+          )}
+        </div>
       </div>
 
       {/* Date Needed */}
@@ -195,63 +219,67 @@ export default function ContactForm() {
         )}
       </div>
 
-      {/* Size */}
-      <div>
-        <label htmlFor="size" className="block text-sm font-medium text-brand-text mb-2">
-          Size <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <select
-            id="size"
-            {...register('size')}
-            className="w-full pl-4 pr-10 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent appearance-none bg-white"
-          >
-            <option value="">Select Size</option>
-            <option value='8"x8" square (The Bubba) $25 min Qty. 1'>
-              8&quot;x8&quot; square (The Bubba) $25 min Qty. 1
-            </option>
-            <option value='4"x4" square (The Peanut) $8 min Qty. 2'>
-              4&quot;x4&quot; square (The Peanut) $8 min Qty. 2
-            </option>
-            <option value="Smaller sizes (must be a dozen)">Smaller sizes (must be a dozen)</option>
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-            <svg className="w-4 h-4 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+      {/* Size and Quantity - Two Columns */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Size */}
+        <div>
+          <label htmlFor="size" className="block text-sm font-medium text-brand-text mb-2">
+            Size <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <select
+              id="size"
+              {...register('size')}
+              className="w-full pl-4 pr-10 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent appearance-none bg-white"
+            >
+              <option value="">Select Size</option>
+              <option value='8"x8" square (The Bubba) $25 min Qty. 1'>
+                8&quot;x8&quot; square (The Bubba) $25 min Qty. 1
+              </option>
+              <option value='4"x4" square (The Peanut) $8 min Qty. 2'>
+                4&quot;x4&quot; square (The Peanut) $8 min Qty. 2
+              </option>
+              <option value="Smaller sizes (must be a dozen)">Smaller sizes (must be a dozen)</option>
+              <option value="Chunk Royale">Chunk Royale</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+              <svg className="w-4 h-4 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
+          {errors.size && (
+            <p className="mt-1 text-sm text-red-500">{errors.size.message}</p>
+          )}
         </div>
-        {errors.size && (
-          <p className="mt-1 text-sm text-red-500">{errors.size.message}</p>
-        )}
-      </div>
 
-      {/* Quantity */}
-      <div>
-        <label htmlFor="quantity" className="block text-sm font-medium text-brand-text mb-2">
-          Quantity <span className="text-red-500">*</span>
-        </label>
-        {selectedSize === 'Smaller sizes (must be a dozen)' ? (
-          <input
-            type="text"
-            id="quantity"
-            {...register('quantity')}
-            value="Sweet Dozen"
-            readOnly
-            className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent bg-gray-50"
-          />
-        ) : (
-          <input
-            type="number"
-            id="quantity"
-            {...register('quantity', { valueAsNumber: true })}
-            min="1"
-            className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-          />
-        )}
-        {errors.quantity && (
-          <p className="mt-1 text-sm text-red-500">{errors.quantity.message}</p>
-        )}
+        {/* Quantity */}
+        <div>
+          <label htmlFor="quantity" className="block text-sm font-medium text-brand-text mb-2">
+            Quantity <span className="text-red-500">*</span>
+          </label>
+          {selectedSize === 'Smaller sizes (must be a dozen)' || selectedSize === 'Chunk Royale' ? (
+            <input
+              type="text"
+              id="quantity"
+              {...register('quantity')}
+              value="Sweet Dozen"
+              readOnly
+              className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent bg-gray-50"
+            />
+          ) : (
+            <input
+              type="number"
+              id="quantity"
+              {...register('quantity', { valueAsNumber: true })}
+              min="1"
+              className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+            />
+          )}
+          {errors.quantity && (
+            <p className="mt-1 text-sm text-red-500">{errors.quantity.message}</p>
+          )}
+        </div>
       </div>
 
       {/* Description */}
@@ -291,7 +319,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coral/90 transition-colors shadow-soft disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coralDark transition-colors shadow-soft disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Submitting...' : 'Submit'}
       </button>

@@ -4,6 +4,8 @@ import { groq } from 'next-sanity'
 import Hero from '@/components/Hero'
 import PriceSection from '@/components/PriceSection'
 import AboutSection from '@/components/AboutSection'
+import ProductSection from '@/components/ProductSection'
+import OptionalSection from '@/components/OptionalSection'
 import Link from 'next/link'
 import StructuredData from '@/components/StructuredData'
 
@@ -27,6 +29,20 @@ interface HomePageData {
   }
   aboutTitle?: string
   aboutContent?: any[]
+  products?: Array<{
+    title: string
+    content?: any[]
+    image?: { asset?: any }
+    alt?: string
+  }>
+  optionalSection1Title?: string
+  optionalSection1Content?: any[]
+  optionalSection1Image?: { asset?: any }
+  optionalSection1ImageAlt?: string
+  optionalSection2Title?: string
+  optionalSection2Content?: any[]
+  optionalSection2Image?: { asset?: any }
+  optionalSection2ImageAlt?: string
 }
 
 async function getHomePageData(): Promise<HomePageData | null> {
@@ -38,6 +54,10 @@ async function getHomePageData(): Promise<HomePageData | null> {
       },
       heroImageMobile{
         asset
+      },
+      heroLogoImage{
+        asset,
+        alt
       },
       heroTitle,
       heroSubtitle,
@@ -51,7 +71,21 @@ async function getHomePageData(): Promise<HomePageData | null> {
         asset
       },
       aboutTitle,
-      aboutContent
+      aboutContent,
+      products[]{
+        title,
+        content,
+        image{ asset },
+        alt
+      },
+      optionalSection1Title,
+      optionalSection1Content,
+      optionalSection1Image{ asset },
+      optionalSection1ImageAlt,
+      optionalSection2Title,
+      optionalSection2Content,
+      optionalSection2Image{ asset },
+      optionalSection2ImageAlt
     }`
     
     const data = await client.fetch(query)
@@ -110,10 +144,10 @@ export default async function Home() {
           Please configure your content in Sanity Studio (run the standalone studio from the <code className="bg-brand-primary/10 px-1 rounded">studio/</code> folder and deploy it separately).
         </p>
         <Link
-          href="/contact"
-          className="inline-block bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coral/90 transition-colors shadow-soft"
+          href="/cookie-inquiry"
+          className="inline-block bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coralDark transition-colors shadow-soft"
         >
-          Contact Us
+          Cookie Inquiry
         </Link>
       </div>
     )
@@ -150,10 +184,18 @@ export default async function Home() {
         <Hero
           heroImageDesktop={data.heroImageDesktop}
           heroImageMobile={data.heroImageMobile}
+          heroLogoImage={data.heroLogoImage}
           heroTitle={data.heroTitle || 'Welcome'}
           heroSubtitle={data.heroSubtitle || 'Sweet No. 13'}
           heroTextColor={data.heroTextColor}
         />
+        <AboutSection
+          aboutTitle={data.aboutTitle}
+          aboutContent={data.aboutContent}
+        />
+        {data.products && data.products.length > 0 && (
+          <ProductSection products={data.products} />
+        )}
         {data.priceField1 && data.priceField2 && (
           <PriceSection
             priceField1={data.priceField1}
@@ -162,9 +204,17 @@ export default async function Home() {
             priceField2Image={data.priceField2Image}
           />
         )}
-        <AboutSection
-          aboutTitle={data.aboutTitle}
-          aboutContent={data.aboutContent}
+        <OptionalSection
+          title={data.optionalSection1Title}
+          content={data.optionalSection1Content}
+          image={data.optionalSection1Image}
+          imageAlt={data.optionalSection1ImageAlt}
+        />
+        <OptionalSection
+          title={data.optionalSection2Title}
+          content={data.optionalSection2Content}
+          image={data.optionalSection2Image}
+          imageAlt={data.optionalSection2ImageAlt}
         />
       </div>
     </>

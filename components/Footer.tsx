@@ -3,13 +3,8 @@ import { PortableText } from '@portabletext/react'
 import { FaInstagram, FaFacebook, FaEtsy, FaPinterest } from 'react-icons/fa'
 import { client } from '@/lib/sanity'
 import { groq } from 'next-sanity'
-import SanityImage from './SanityImage'
 
 interface SiteSettings {
-  logo?: {
-    asset?: any
-    alt?: string
-  }
   instagramUrl?: string
   facebookUrl?: string
   etsyUrl?: string
@@ -20,10 +15,6 @@ interface SiteSettings {
 async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const query = groq`*[_type == "siteSettings"][0]{
-      logo{
-        asset,
-        alt
-      },
       instagramUrl,
       facebookUrl,
       etsyUrl,
@@ -44,23 +35,13 @@ export default async function Footer() {
 
   return (
     <footer className="bg-brand-primary border-t border-brand-muted/20 mt-auto">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-          {/* Logo - Left */}
+          {/* Site name - Left */}
           <Link href="/" className="flex items-center justify-center md:justify-start">
-            {settings.logo?.asset ? (
-              <SanityImage
-                asset={settings.logo.asset}
-                alt={settings.logo.alt || 'Sweet No. 13 Logo'}
-                width={150}
-                height={60}
-                className="h-12 w-auto"
-              />
-            ) : (
-              <span className="text-2xl font-bold italic text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
-                Sweet No. 13
-              </span>
-            )}
+            <span className="text-2xl font-bold italic text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
+              Sweet No. 13
+            </span>
           </Link>
 
           {/* Disclaimer - Center */}

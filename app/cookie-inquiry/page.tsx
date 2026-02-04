@@ -7,14 +7,14 @@ import StructuredData from '@/components/StructuredData'
 
 export const dynamic = 'force-dynamic'
 
-interface ContactPageData {
+interface CookieInquiryPageData {
   heading?: string
   content?: any[]
 }
 
-async function getContactPageData(): Promise<ContactPageData> {
+async function getCookieInquiryPageData(): Promise<CookieInquiryPageData> {
   try {
-    const query = groq`*[_type == "contactPage"][0]{
+    const query = groq`*[_type == "cookieInquiryPage"][0]{
       heading,
       content
     }`
@@ -22,7 +22,7 @@ async function getContactPageData(): Promise<ContactPageData> {
     const data = await client.fetch(query)
     return data || {}
   } catch (error) {
-    console.error('Error fetching contact page data:', error)
+    console.error('Error fetching cookie inquiry page data:', error)
     return {}
   }
 }
@@ -31,18 +31,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sweetno13.com'
   
   return {
-    title: 'Contact Us',
-    description: 'Get in touch with Sweet No. 13 to order custom decorated cookies for your special occasion.',
+    title: 'Cookie Inquiry',
+    description: 'Order custom decorated cookies from Sweet No. 13 for your special occasion.',
     openGraph: {
-      title: 'Contact Us | Sweet No. 13',
+      title: 'Cookie Inquiry | Sweet No. 13',
       description: 'Order custom decorated cookies for your special occasion',
-      url: `${siteUrl}/contact`,
+      url: `${siteUrl}/cookie-inquiry`,
     },
   }
 }
 
-export default async function ContactPage() {
-  const data = await getContactPageData()
+export default async function CookieInquiryPage() {
+  const data = await getCookieInquiryPageData()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sweetno13.com'
 
   return (
@@ -52,9 +52,9 @@ export default async function ContactPage() {
         data={{
           '@context': 'https://schema.org',
           '@type': 'ContactPage',
-          name: 'Contact Us - Sweet No. 13',
-          description: 'Contact Sweet No. 13 to order custom decorated cookies',
-          url: `${siteUrl}/contact`,
+          name: 'Cookie Inquiry - Sweet No. 13',
+          description: 'Order custom decorated cookies from Sweet No. 13',
+          url: `${siteUrl}/cookie-inquiry`,
           mainEntity: {
             '@type': 'Organization',
             name: 'Sweet No. 13',

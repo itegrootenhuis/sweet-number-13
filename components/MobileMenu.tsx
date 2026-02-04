@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { FaInstagram, FaFacebook, FaEtsy, FaPinterest } from 'react-icons/fa'
+import { FaInstagram } from 'react-icons/fa'
 
 interface MobileMenuProps {
   instagramUrl?: string
@@ -13,9 +13,6 @@ interface MobileMenuProps {
 
 export default function MobileMenu({
   instagramUrl,
-  facebookUrl,
-  etsyUrl,
-  pinterestUrl,
 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -47,11 +44,18 @@ export default function MobileMenu({
         <nav className="absolute top-full left-0 right-0 bg-brand-primary md:hidden z-50">
           <div className="container mx-auto px-4 py-4 space-y-3 text-right">
             <Link
-              href="/contact"
+              href="/gallery"
               onClick={() => setIsOpen(false)}
               className="block text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors"
             >
-              Contact Us
+              Gallery
+            </Link>
+            <Link
+              href="/cookie-inquiry"
+              onClick={() => setIsOpen(false)}
+              className="block text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors"
+            >
+              Cookie Inquiry
             </Link>
             {instagramUrl && (
               <a
@@ -60,49 +64,10 @@ export default function MobileMenu({
                 rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
-                aria-label="Instagram"
+                aria-label="Follow us on Instagram"
               >
+                <span>Follow Us</span>
                 <FaInstagram className="w-5 h-5" />
-                <span>Instagram</span>
-              </a>
-            )}
-            {facebookUrl && (
-              <a
-                href={facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
-                aria-label="Facebook"
-              >
-                <FaFacebook className="w-5 h-5" />
-                <span>Facebook</span>
-              </a>
-            )}
-            {etsyUrl && (
-              <a
-                href={etsyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
-                aria-label="Etsy"
-              >
-                <FaEtsy className="w-5 h-5" />
-                <span>Etsy</span>
-              </a>
-            )}
-            {pinterestUrl && (
-              <a
-                href={pinterestUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 text-brand-text hover:text-brand-coral visited:text-brand-text transition-colors justify-end"
-                aria-label="Pinterest"
-              >
-                <FaPinterest className="w-5 h-5" />
-                <span>Pinterest</span>
               </a>
             )}
           </div>

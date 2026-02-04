@@ -6,22 +6,6 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
-      name: 'logo',
-      title: 'Logo',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        {
-          name: 'alt',
-          title: 'Alt Text',
-          type: 'string',
-          description: 'Alternative text for the logo image',
-        },
-      ],
-    }),
-    defineField({
       name: 'instagramUrl',
       title: 'Instagram URL',
       type: 'url',

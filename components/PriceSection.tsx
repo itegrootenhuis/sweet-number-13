@@ -85,10 +85,10 @@ export default function PriceSection({ priceField1, priceField1Image, priceField
         </div>
         <div className="text-center mt-8">
           <Link
-            href="/contact"
-            className="inline-block bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coral/90 transition-colors shadow-soft"
+            href="/cookie-inquiry"
+            className="inline-block bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coralDark transition-colors shadow-soft"
           >
-            Coockie Inquiry
+            Cookie Inquiry
           </Link>
         </div>
       </div>

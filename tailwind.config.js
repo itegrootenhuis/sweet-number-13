@@ -8,8 +8,9 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          primary: "#9FEAF0",   // Brand Aqua
-          coral: "#FF8F6B",     // Coral Pop
+          primary: "#BEE9F4",   // Center Logo Light Blue
+          coral: "#E8A293",     // Salmon Color
+          coralDark: "#D18A7A", // Darker Salmon for Hover
           peach: "#F7B7A0",     // Soft Peach
           seafoam: "#66C7B7",   // Seafoam Mint
           mintWash: "#CFEFE8",  // Pale Mint Wash

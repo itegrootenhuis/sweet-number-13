@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     
     const fullName = formData.get('fullName') as string
+    const email = formData.get('email') as string
     const dateNeeded = formData.get('dateNeeded') as string
     const occasion = formData.get('occasion') as string
     const size = formData.get('size') as string
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
     const imageFile = formData.get('image') as File | null
 
     // Validate required fields (image is optional)
-    if (!fullName || !dateNeeded || !occasion || !size || !quantity || !description) {
+    if (!fullName || !email || !dateNeeded || !occasion || !size || !quantity || !description) {
       return NextResponse.json(
         { message: 'All fields are required' },
         { status: 400 }
@@ -78,6 +79,7 @@ export async function POST(request: NextRequest) {
     const emailHtml = `
       <h2>New Cookie Order Request</h2>
       <p><strong>Full Name:</strong> ${fullName}</p>
+      <p><strong>Email:</strong> ${email}</p>
       <p><strong>Date Needed:</strong> ${dateNeeded}</p>
       <p><strong>Occasion:</strong> ${occasion}</p>
       <p><strong>Size:</strong> ${size}</p>
