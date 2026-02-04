@@ -20,13 +20,21 @@ interface GallerySectionProps {
 
 export default function GallerySection({ images }: GallerySectionProps) {
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT)
-  const [modalItem, setModalItem] = useState<GalleryImage | null>(null)
+  const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null)
 
   const visible = images.slice(0, visibleCount)
   const hasMore = visibleCount < images.length
+  const modalItem = currentModalIndex !== null ? visible[currentModalIndex] : null
 
   const showMore = () => {
     setVisibleCount((prev) => Math.min(prev + LOAD_MORE_COUNT, images.length))
+  }
+
+  const goPrev = () => {
+    setCurrentModalIndex((i) => (i === null ? null : Math.max(0, i - 1)))
+  }
+  const goNext = () => {
+    setCurrentModalIndex((i) => (i === null ? null : Math.min(visible.length - 1, i + 1)))
   }
 
   if (!images || images.length === 0) {
@@ -48,7 +56,7 @@ export default function GallerySection({ images }: GallerySectionProps) {
               key={index}
               type="button"
               className="block w-full text-left rounded-lg overflow-hidden shadow-soft hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-brand-coral"
-              onClick={() => setModalItem(item)}
+              onClick={() => setCurrentModalIndex(index)}
             >
               {item.image?.asset && (
                 <SanityImage
@@ -75,14 +83,18 @@ export default function GallerySection({ images }: GallerySectionProps) {
         )}
       </div>
 
-      {modalItem && (
+      {modalItem && currentModalIndex !== null && (
         <ImageModal
-          isOpen={!!modalItem}
-          onClose={() => setModalItem(null)}
+          isOpen
+          onClose={() => setCurrentModalIndex(null)}
           imageAsset={modalItem.image?.asset}
           alt={modalItem.alt || 'Gallery image'}
           title={modalItem.title}
           content={modalItem.content}
+          onPrev={currentModalIndex > 0 ? goPrev : undefined}
+          onNext={currentModalIndex < visible.length - 1 ? goNext : undefined}
+          showPrev={currentModalIndex > 0}
+          showNext={currentModalIndex < visible.length - 1}
         />
       )}
     </section>

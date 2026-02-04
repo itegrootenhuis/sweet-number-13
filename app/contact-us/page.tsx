@@ -32,7 +32,8 @@ export default function ContactUsPage() {
           },
         }}
       />
-      <div className="container mx-auto px-4 py-12">
+      <div className="bg-brand-mintWash min-h-screen">
+        <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold italic mb-6 text-center text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
           Contact Us
         </h1>
@@ -40,6 +41,7 @@ export default function ContactUsPage() {
           Have a question or want to get in touch? Fill out the form below and we will get back to you as soon as we can.
         </p>
         <ContactUsForm />
+        </div>
       </div>
     </>
   )

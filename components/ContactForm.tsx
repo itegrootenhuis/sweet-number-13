@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { loadRecaptchaScript } from '@/lib/recaptcha'
 
 const formSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -31,15 +32,6 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-declare global {
-  interface Window {
-    grecaptcha: {
-      ready: (callback: () => void) => Promise<void>
-      execute: (siteKey: string, options?: { action: string }) => Promise<string>
-    }
-  }
-}
-
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -48,45 +40,15 @@ export default function ContactForm() {
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   })
 
-  const selectedSize = watch('size')
-  const currentQuantity = watch('quantity')
-
-  // Auto-fill quantity when "Smaller sizes" or "Chunk Royale" is selected
-  useEffect(() => {
-    if (
-      (selectedSize === 'Smaller sizes (must be a dozen)' || selectedSize === 'Chunk Royale') &&
-      currentQuantity !== 'Sweet Dozen'
-    ) {
-      setValue('quantity', 'Sweet Dozen' as any)
-    }
-  }, [selectedSize, currentQuantity, setValue])
-
-  // Load reCAPTCHA v3 script
+  // Load reCAPTCHA when user navigates to the form page
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-    if (!siteKey) return
-
-    // Check if script already exists
-    const existingScript = document.querySelector(`script[src*="recaptcha/api.js?render=${siteKey}"]`)
-    
-    if (existingScript) {
-      // Script already loaded
-      return
-    }
-
-    // Script doesn't exist, create and load it
-    const script = document.createElement('script')
-    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
-    script.async = true
-    script.defer = true
-    document.body.appendChild(script)
+    if (siteKey) loadRecaptchaScript(siteKey).catch(() => {})
   }, [])
 
   const onSubmit = async (data: FormData) => {
@@ -100,14 +62,8 @@ export default function ContactForm() {
         throw new Error('reCAPTCHA site key is not configured')
       }
 
-      // Get reCAPTCHA v3 token
-      let recaptchaToken = ''
-      if (window.grecaptcha) {
-        await new Promise<void>((resolve) => {
-          window.grecaptcha.ready(() => resolve())
-        })
-        recaptchaToken = await window.grecaptcha.execute(siteKey, { action: 'submit' })
-      }
+      await loadRecaptchaScript(siteKey)
+      const recaptchaToken = await window.grecaptcha.execute(siteKey, { action: 'submit' })
 
       if (!recaptchaToken) {
         setSubmitStatus('error')
@@ -239,8 +195,8 @@ export default function ContactForm() {
               <option value='4"x4" square (The Peanut) $8 min Qty. 2'>
                 4&quot;x4&quot; square (The Peanut) $8 min Qty. 2
               </option>
-              <option value="Smaller sizes (must be a dozen)">Smaller sizes (must be a dozen)</option>
-              <option value="Chunk Royale">Chunk Royale</option>
+              <option value="Smaller Sized Qty. 13">Smaller Sized Qty. 13</option>
+              <option value="Chunk Royal Qty. 13">Chunk Royal Qty. 13</option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
               <svg className="w-4 h-4 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,24 +214,13 @@ export default function ContactForm() {
           <label htmlFor="quantity" className="block text-sm font-medium text-brand-text mb-2">
             Quantity <span className="text-red-500">*</span>
           </label>
-          {selectedSize === 'Smaller sizes (must be a dozen)' || selectedSize === 'Chunk Royale' ? (
-            <input
-              type="text"
-              id="quantity"
-              {...register('quantity')}
-              value="Sweet Dozen"
-              readOnly
-              className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent bg-gray-50"
-            />
-          ) : (
-            <input
-              type="number"
-              id="quantity"
-              {...register('quantity', { valueAsNumber: true })}
-              min="1"
-              className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-            />
-          )}
+          <input
+            type="number"
+            id="quantity"
+            {...register('quantity', { valueAsNumber: true })}
+            min="1"
+            className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+          />
           {errors.quantity && (
             <p className="mt-1 text-sm text-red-500">{errors.quantity.message}</p>
           )}

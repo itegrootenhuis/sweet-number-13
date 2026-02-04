@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { loadRecaptchaScript } from '@/lib/recaptcha'
 
 const formSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -13,15 +14,6 @@ const formSchema = z.object({
 })
 
 type FormData = z.infer<typeof formSchema>
-
-declare global {
-  interface Window {
-    grecaptcha: {
-      ready: (callback: () => void) => Promise<void>
-      execute: (siteKey: string, options?: { action: string }) => Promise<string>
-    }
-  }
-}
 
 export default function ContactUsForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -36,16 +28,10 @@ export default function ContactUsForm() {
     resolver: zodResolver(formSchema),
   })
 
+  // Load reCAPTCHA when user navigates to the form page
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-    if (!siteKey) return
-    const existingScript = document.querySelector(`script[src*="recaptcha/api.js?render=${siteKey}"]`)
-    if (existingScript) return
-    const script = document.createElement('script')
-    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
-    script.async = true
-    script.defer = true
-    document.body.appendChild(script)
+    if (siteKey) loadRecaptchaScript(siteKey).catch(() => {})
   }, [])
 
   const onSubmit = async (data: FormData) => {
@@ -59,13 +45,8 @@ export default function ContactUsForm() {
         throw new Error('reCAPTCHA site key is not configured')
       }
 
-      let recaptchaToken = ''
-      if (window.grecaptcha) {
-        await new Promise<void>((resolve) => {
-          window.grecaptcha.ready(() => resolve())
-        })
-        recaptchaToken = await window.grecaptcha.execute(siteKey, { action: 'submit' })
-      }
+      await loadRecaptchaScript(siteKey)
+      const recaptchaToken = await window.grecaptcha.execute(siteKey, { action: 'submit' })
 
       if (!recaptchaToken) {
         setSubmitStatus('error')

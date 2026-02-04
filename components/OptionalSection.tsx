@@ -31,12 +31,12 @@ export default function OptionalSection({ title, content, image, imageAlt }: Opt
           </div>
         )}
         {hasImage && (
-          <div className="rounded-lg overflow-hidden shadow-soft">
+          <div className="rounded-lg overflow-hidden shadow-soft max-w-[600px] mx-auto">
             <SanityImage
               asset={image.asset}
               alt={imageAlt || title || 'Section image'}
-              width={800}
-              height={600}
+              width={600}
+              height={450}
               className="w-full h-auto object-cover"
             />
           </div>

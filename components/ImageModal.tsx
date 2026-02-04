@@ -11,28 +11,39 @@ interface ImageModalProps {
   alt?: string
   title?: string
   content?: any[]
+  onPrev?: () => void
+  onNext?: () => void
+  showPrev?: boolean
+  showNext?: boolean
 }
 
-export default function ImageModal({ isOpen, onClose, imageAsset, alt = 'Product image', title, content }: ImageModalProps) {
-  // Close on Escape key
+export default function ImageModal({ isOpen, onClose, imageAsset, alt = 'Product image', title, content, onPrev, onNext, showPrev, showNext }: ImageModalProps) {
+  // Close on Escape; prev/next on Arrow keys
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
+    const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose()
+      }
+      if (e.key === 'ArrowLeft' && showPrev && onPrev) {
+        e.preventDefault()
+        onPrev()
+      }
+      if (e.key === 'ArrowRight' && showNext && onNext) {
+        e.preventDefault()
+        onNext()
       }
     }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      // Prevent body scroll when modal is open
+      document.addEventListener('keydown', handleKeydown)
       document.body.style.overflow = 'hidden'
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('keydown', handleKeydown)
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen, onClose])
+  }, [isOpen, onClose, onPrev, onNext, showPrev, showNext])
 
   if (!isOpen || !imageAsset) return null
 
@@ -67,6 +78,34 @@ export default function ImageModal({ isOpen, onClose, imageAsset, alt = 'Product
             />
           </svg>
         </button>
+
+        {/* Previous image */}
+        {showPrev && onPrev && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onPrev() }}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            aria-label="Previous image"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+
+        {/* Next image */}
+        {showNext && onNext && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onNext() }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            aria-label="Next image"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
 
         <div className="bg-white rounded-lg overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
           {/* Image */}

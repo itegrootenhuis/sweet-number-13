@@ -62,7 +62,8 @@ export default async function CookieInquiryPage() {
           },
         }}
       />
-      <div className="container mx-auto px-4 py-12">
+      <div className="bg-brand-mintWash min-h-screen">
+        <div className="container mx-auto px-4 py-12">
         {data.heading && (
           <h1 className="text-4xl font-bold italic mb-6 text-center text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
             {data.heading}
@@ -76,6 +77,7 @@ export default async function CookieInquiryPage() {
         )}
 
         <ContactForm />
+        </div>
       </div>
     </>
   )
