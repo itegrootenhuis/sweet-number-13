@@ -8,7 +8,11 @@ const INITIAL_COUNT = 9
 const LOAD_MORE_COUNT = 9
 
 export interface GalleryImage {
-  image?: { asset?: any }
+  image?: { 
+    asset?: any
+    hotspot?: { x: number; y: number; width: number; height: number }
+    crop?: { top: number; bottom: number; left: number; right: number }
+  }
   alt?: string
   title?: string
   content?: any[]
@@ -39,7 +43,7 @@ export default function GallerySection({ images }: GallerySectionProps) {
 
   if (!images || images.length === 0) {
     return (
-      <section className="bg-brand-mintWash py-12">
+      <section className="bg-brand-primary py-12">
         <div className="container mx-auto px-4 text-center text-brand-textMuted">
           No images in the gallery yet.
         </div>
@@ -48,7 +52,7 @@ export default function GallerySection({ images }: GallerySectionProps) {
   }
 
   return (
-    <section className="bg-brand-mintWash py-12">
+    <section className="bg-brand-primary py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {visible.map((item, index) => (
@@ -61,6 +65,8 @@ export default function GallerySection({ images }: GallerySectionProps) {
               {item.image?.asset && (
                 <SanityImage
                   asset={item.image.asset}
+                  hotspot={item.image.hotspot}
+                  crop={item.image.crop}
                   alt={item.alt || 'Gallery image'}
                   width={400}
                   height={400}
@@ -88,6 +94,8 @@ export default function GallerySection({ images }: GallerySectionProps) {
           isOpen
           onClose={() => setCurrentModalIndex(null)}
           imageAsset={modalItem.image?.asset}
+          imageHotspot={modalItem.image?.hotspot}
+          imageCrop={modalItem.image?.crop}
           alt={modalItem.alt || 'Gallery image'}
           title={modalItem.title}
           content={modalItem.content}

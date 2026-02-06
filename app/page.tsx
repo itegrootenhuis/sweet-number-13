@@ -35,6 +35,7 @@ interface HomePageData {
     image?: { asset?: any }
     alt?: string
   }>
+  productsFooterContent?: any[]
   optionalSection1Title?: string
   optionalSection1Content?: any[]
   optionalSection1Image?: { asset?: any }
@@ -50,13 +51,19 @@ async function getHomePageData(): Promise<HomePageData | null> {
     // Query for published documents (exclude drafts)
     const query = groq`*[_type == "homePage" && !(_id in path("drafts.**"))][0]{
       heroImageDesktop{
-        asset
+        asset,
+        hotspot,
+        crop
       },
       heroImageMobile{
-        asset
+        asset,
+        hotspot,
+        crop
       },
       heroLogoImage{
         asset,
+        hotspot,
+        crop,
         alt
       },
       heroTitle,
@@ -64,27 +71,32 @@ async function getHomePageData(): Promise<HomePageData | null> {
       heroTextColor,
       priceField1,
       priceField1Image{
-        asset
+        asset,
+        hotspot,
+        crop
       },
       priceField2,
       priceField2Image{
-        asset
+        asset,
+        hotspot,
+        crop
       },
       aboutTitle,
       aboutContent,
       products[]{
         title,
         content,
-        image{ asset },
+        image{ asset, hotspot, crop },
         alt
       },
+      productsFooterContent,
       optionalSection1Title,
       optionalSection1Content,
-      optionalSection1Image{ asset },
+      optionalSection1Image{ asset, hotspot, crop },
       optionalSection1ImageAlt,
       optionalSection2Title,
       optionalSection2Content,
-      optionalSection2Image{ asset },
+      optionalSection2Image{ asset, hotspot, crop },
       optionalSection2ImageAlt
     }`
     
@@ -194,7 +206,7 @@ export default async function Home() {
           aboutContent={data.aboutContent}
         />
         {data.products && data.products.length > 0 && (
-          <ProductSection products={data.products} />
+          <ProductSection products={data.products} footerContent={data.productsFooterContent} />
         )}
         {data.priceField1 && data.priceField2 && (
           <PriceSection

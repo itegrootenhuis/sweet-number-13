@@ -4,7 +4,11 @@ import SanityImage from './SanityImage'
 interface OptionalSectionProps {
   title?: string
   content?: any[]
-  image?: { asset?: any }
+  image?: { 
+    asset?: any
+    hotspot?: { x: number; y: number; width: number; height: number }
+    crop?: { top: number; bottom: number; left: number; right: number }
+  }
   imageAlt?: string
 }
 
@@ -18,7 +22,7 @@ export default function OptionalSection({ title, content, image, imageAlt }: Opt
   }
 
   return (
-    <section className="bg-brand-mintWash pb-12">
+    <section className="bg-brand-primary pb-12">
       <div className="container mx-auto px-4 max-w-3xl mx-auto">
         {hasTitle && (
           <h2 className="text-3xl font-bold italic mb-6 text-center text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
@@ -34,6 +38,8 @@ export default function OptionalSection({ title, content, image, imageAlt }: Opt
           <div className="rounded-lg overflow-hidden shadow-soft max-w-[600px] mx-auto">
             <SanityImage
               asset={image.asset}
+              hotspot={image.hotspot}
+              crop={image.crop}
               alt={imageAlt || title || 'Section image'}
               width={600}
               height={450}

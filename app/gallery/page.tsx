@@ -4,7 +4,11 @@ import { groq } from 'next-sanity'
 import GallerySection from '@/components/GallerySection'
 
 interface GalleryImage {
-  image?: { asset?: any }
+  image?: { 
+    asset?: any
+    hotspot?: { x: number; y: number; width: number; height: number }
+    crop?: { top: number; bottom: number; left: number; right: number }
+  }
   alt?: string
   title?: string
   content?: any[]
@@ -18,7 +22,7 @@ async function getGalleryPageData(): Promise<GalleryPageData | null> {
   try {
     const query = groq`*[_type == "galleryPage" && !(_id in path("drafts.**"))][0]{
       images[]{
-        image{ asset },
+        image{ asset, hotspot, crop },
         alt,
         title,
         content

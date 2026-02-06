@@ -8,6 +8,8 @@ interface ImageModalProps {
   isOpen: boolean
   onClose: () => void
   imageAsset?: any
+  imageHotspot?: { x: number; y: number; width: number; height: number }
+  imageCrop?: { top: number; bottom: number; left: number; right: number }
   alt?: string
   title?: string
   content?: any[]
@@ -17,7 +19,7 @@ interface ImageModalProps {
   showNext?: boolean
 }
 
-export default function ImageModal({ isOpen, onClose, imageAsset, alt = 'Product image', title, content, onPrev, onNext, showPrev, showNext }: ImageModalProps) {
+export default function ImageModal({ isOpen, onClose, imageAsset, imageHotspot, imageCrop, alt = 'Product image', title, content, onPrev, onNext, showPrev, showNext }: ImageModalProps) {
   // Close on Escape; prev/next on Arrow keys
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
@@ -112,6 +114,8 @@ export default function ImageModal({ isOpen, onClose, imageAsset, alt = 'Product
           <div className={`flex-shrink-0 ${hasSidebar ? 'md:max-w-[60%]' : ''}`}>
             <SanityImage
               asset={imageAsset}
+              hotspot={imageHotspot}
+              crop={imageCrop}
               alt={alt}
               width={1200}
               height={1200}

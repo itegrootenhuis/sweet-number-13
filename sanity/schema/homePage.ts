@@ -122,6 +122,13 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'productsFooterContent',
+      title: 'Products Footer Content',
+      type: 'array',
+      of: [{ type: 'block' }],
+      description: 'Rich text displayed above the Cookie Inquiry button',
+    }),
+    defineField({
       name: 'optionalSection1Title',
       title: 'Optional Section 1 Title',
       type: 'string',

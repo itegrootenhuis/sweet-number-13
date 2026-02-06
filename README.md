@@ -34,7 +34,9 @@ cp .env.local.example .env.local
 - `NEXT_PUBLIC_SANITY_PROJECT_ID=n2qqnp5j`
 - `NEXT_PUBLIC_SANITY_DATASET=production` (or `development`)
 - `SANITY_API_TOKEN` (get from Sanity dashboard)
-- `RESEND_API_KEY` (get from Resend dashboard)
+- `SENDGRID_API_KEY` (get from SendGrid dashboard)
+- `FROM_EMAIL` (verified sender email in SendGrid)
+- `CONTACT_EMAIL` (where form submissions are sent)
 
 ### Development
 
@@ -89,7 +91,7 @@ The contact form includes:
 
 ## Email Integration
 
-Emails are sent via Resend. Update the recipient email in `app/api/contact/route.ts`.
+Emails are sent via SendGrid. Configure `SENDGRID_API_KEY`, `FROM_EMAIL`, and `CONTACT_EMAIL` in your environment variables.
 
 ## Deployment
 
@@ -103,6 +105,6 @@ Deploy to Vercel:
 
 1. Add actual logo PNG to Sanity
 2. Configure reCAPTCHA with domain keys
-3. Update Resend email addresses
+3. Configure SendGrid email settings
 4. Set up Sanity Studio authentication
 5. Test form submission and email delivery

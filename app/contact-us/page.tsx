@@ -32,11 +32,15 @@ export default function ContactUsPage() {
           },
         }}
       />
-      <div className="bg-brand-mintWash min-h-screen">
+      <section className="bg-brand-coral py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold italic text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
+            Contact Us
+          </h1>
+        </div>
+      </section>
+      <div className="bg-brand-primary min-h-screen">
         <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold italic mb-6 text-center text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
-          Contact Us
-        </h1>
         <p className="text-center text-brand-textMuted mb-12 max-w-2xl mx-auto">
           Have a question or want to get in touch? Fill out the form below and we will get back to you as soon as we can.
         </p>

@@ -4,6 +4,8 @@ import { SanityImageSource } from '@sanity/image-url/lib/types/types'
 
 interface SanityImageProps {
   asset: SanityImageSource
+  hotspot?: { x: number; y: number; width: number; height: number }
+  crop?: { top: number; bottom: number; left: number; right: number }
   alt: string
   className?: string
   width?: number
@@ -13,6 +15,8 @@ interface SanityImageProps {
 
 export default function SanityImage({
   asset,
+  hotspot,
+  crop,
   alt,
   className,
   width,
@@ -22,7 +26,9 @@ export default function SanityImage({
   if (!asset) return null
 
   try {
-    const imageUrl = urlFor(asset).width(width || 1200).height(height || 800).url()
+    // Build the full image object with hotspot/crop for urlFor to use
+    const imageSource = hotspot || crop ? { asset, hotspot, crop } : asset
+    const imageUrl = urlFor(imageSource).width(width || 1200).height(height || 800).url()
     
     if (!imageUrl) return null
 

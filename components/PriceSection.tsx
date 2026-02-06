@@ -10,18 +10,27 @@ interface PriceSectionProps {
   priceField1: any[]
   priceField1Image?: {
     asset?: any
+    hotspot?: { x: number; y: number; width: number; height: number }
+    crop?: { top: number; bottom: number; left: number; right: number }
   }
   priceField2: any[]
   priceField2Image?: {
     asset?: any
+    hotspot?: { x: number; y: number; width: number; height: number }
+    crop?: { top: number; bottom: number; left: number; right: number }
   }
 }
 
 export default function PriceSection({ priceField1, priceField1Image, priceField2, priceField2Image }: PriceSectionProps) {
-  const [modalImage, setModalImage] = useState<{ asset: any; alt: string } | null>(null)
+  const [modalImage, setModalImage] = useState<{ 
+    asset: any
+    hotspot?: { x: number; y: number; width: number; height: number }
+    crop?: { top: number; bottom: number; left: number; right: number }
+    alt: string 
+  } | null>(null)
 
-  const openModal = (asset: any, alt: string) => {
-    setModalImage({ asset, alt })
+  const openModal = (asset: any, hotspot: any, crop: any, alt: string) => {
+    setModalImage({ asset, hotspot, crop, alt })
   }
 
   const closeModal = () => {
@@ -29,7 +38,7 @@ export default function PriceSection({ priceField1, priceField1Image, priceField
   }
 
   return (
-    <section className="bg-brand-mintWash py-12">
+    <section className="bg-brand-primary py-12">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <div className="flex flex-col items-center">
@@ -46,9 +55,11 @@ export default function PriceSection({ priceField1, priceField1Image, priceField
               />
             </div>
             {priceField1Image?.asset && (
-              <div className="mt-6 cursor-pointer" onClick={() => openModal(priceField1Image.asset, 'Product image')}>
+              <div className="mt-6 cursor-pointer" onClick={() => openModal(priceField1Image.asset, priceField1Image.hotspot, priceField1Image.crop, 'Product image')}>
                 <SanityImage
                   asset={priceField1Image.asset}
+                  hotspot={priceField1Image.hotspot}
+                  crop={priceField1Image.crop}
                   alt="Product image"
                   width={400}
                   height={400}
@@ -71,9 +82,11 @@ export default function PriceSection({ priceField1, priceField1Image, priceField
               />
             </div>
             {priceField2Image?.asset && (
-              <div className="mt-6 cursor-pointer" onClick={() => openModal(priceField2Image.asset, 'Product image')}>
+              <div className="mt-6 cursor-pointer" onClick={() => openModal(priceField2Image.asset, priceField2Image.hotspot, priceField2Image.crop, 'Product image')}>
                 <SanityImage
                   asset={priceField2Image.asset}
+                  hotspot={priceField2Image.hotspot}
+                  crop={priceField2Image.crop}
                   alt="Product image"
                   width={400}
                   height={400}
@@ -99,6 +112,8 @@ export default function PriceSection({ priceField1, priceField1Image, priceField
           isOpen={!!modalImage}
           onClose={closeModal}
           imageAsset={modalImage.asset}
+          imageHotspot={modalImage.hotspot}
+          imageCrop={modalImage.crop}
           alt={modalImage.alt}
         />
       )}

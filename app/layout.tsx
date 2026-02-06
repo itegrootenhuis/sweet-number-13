@@ -79,7 +79,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${playfair.variable} font-sans min-h-screen flex flex-col`}>
+      <body className={`${playfair.variable} font-sans min-h-screen flex flex-col bg-brand-primary`}>
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />

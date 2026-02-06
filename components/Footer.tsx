@@ -34,13 +34,13 @@ export default async function Footer() {
   const settings = await getSiteSettings()
 
   return (
-    <footer className="bg-brand-primary border-t border-brand-muted/20 mt-auto">
+    <footer className="bg-brand-coral border-t border-brand-muted/20 mt-auto">
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           {/* Site name - Left */}
           <Link href="/" className="flex items-center justify-center md:justify-start">
             <span className="text-2xl font-bold italic text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
-              Sweet No. 13
+              Sweet No. <span className="text-3xl">13</span>
             </span>
           </Link>
 
@@ -62,7 +62,7 @@ export default async function Footer() {
                           href={value.href}
                           target={target}
                           rel={rel}
-                          className="text-brand-text hover:text-brand-coral underline transition-colors"
+                          className="text-brand-text hover:text-brand-primary underline transition-colors"
                         >
                           {children}
                         </a>
@@ -83,7 +83,7 @@ export default async function Footer() {
                 href={settings.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
+                className="text-brand-text hover:text-brand-primary transition-colors"
                 aria-label="Instagram"
               >
                 <FaInstagram className="w-6 h-6" />
@@ -94,7 +94,7 @@ export default async function Footer() {
                 href={settings.facebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
+                className="text-brand-text hover:text-brand-primary transition-colors"
                 aria-label="Facebook"
               >
                 <FaFacebook className="w-6 h-6" />
@@ -105,7 +105,7 @@ export default async function Footer() {
                 href={settings.etsyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
+                className="text-brand-text hover:text-brand-primary transition-colors"
                 aria-label="Etsy"
               >
                 <FaEtsy className="w-6 h-6" />
@@ -116,7 +116,7 @@ export default async function Footer() {
                 href={settings.pinterestUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-text hover:text-brand-coral transition-colors"
+                className="text-brand-text hover:text-brand-primary transition-colors"
                 aria-label="Pinterest"
               >
                 <FaPinterest className="w-6 h-6" />

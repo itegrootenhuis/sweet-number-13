@@ -12,7 +12,7 @@ export default function AboutSection({ aboutTitle, aboutContent }: AboutSectionP
   }
 
   return (
-    <section className="bg-brand-mintWash py-8">
+    <section className="bg-brand-primary py-8">
       <div className="container mx-auto px-4">
         {aboutTitle && (
           <h2 className="text-4xl font-bold italic mb-6 text-center text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>

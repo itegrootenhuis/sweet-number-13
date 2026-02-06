@@ -38,7 +38,7 @@ export default async function Header() {
           {/* Logo - text only */}
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold italic text-brand-text" style={{ fontFamily: 'var(--font-playfair)' }}>
-              Sweet No. 13
+              Sweet No. <span className="text-3xl">13</span>
             </span>
           </Link>
 
