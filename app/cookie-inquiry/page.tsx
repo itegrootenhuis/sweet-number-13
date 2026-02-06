@@ -5,7 +5,8 @@ import { PortableText } from '@portabletext/react'
 import ContactForm from '@/components/ContactForm'
 import StructuredData from '@/components/StructuredData'
 
-export const dynamic = 'force-dynamic'
+// Revalidate every 5 minutes (300 seconds) for ISR
+export const revalidate = 300
 
 interface CookieInquiryPageData {
   heading?: string

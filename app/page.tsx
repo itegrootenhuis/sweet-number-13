@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import { client } from '@/lib/sanity'
+
+// Revalidate every 5 minutes (300 seconds) for ISR
+export const revalidate = 300
 import { groq } from 'next-sanity'
 import Hero from '@/components/Hero'
 import PriceSection from '@/components/PriceSection'
