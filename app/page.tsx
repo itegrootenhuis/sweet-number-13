@@ -10,11 +10,9 @@ import Link from 'next/link'
 import StructuredData from '@/components/StructuredData'
 
 interface HomePageData {
-  heroImageDesktop?: {
+  heroLogoImage?: {
     asset?: any
-  }
-  heroImageMobile?: {
-    asset?: any
+    alt?: string
   }
   heroTitle: string
   heroSubtitle: string
@@ -50,16 +48,6 @@ async function getHomePageData(): Promise<HomePageData | null> {
   try {
     // Query for published documents (exclude drafts)
     const query = groq`*[_type == "homePage" && !(_id in path("drafts.**"))][0]{
-      heroImageDesktop{
-        asset,
-        hotspot,
-        crop
-      },
-      heroImageMobile{
-        asset,
-        hotspot,
-        crop
-      },
       heroLogoImage{
         asset,
         hotspot,
@@ -133,12 +121,12 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: data?.heroTitle || 'Sweet No. 13',
       description: data?.heroSubtitle || 'Custom decorated cookies and sweet treats',
-      images: data?.heroImageDesktop?.asset ? [
+      images: data?.heroLogoImage?.asset ? [
         {
-          url: `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/${data.heroImageDesktop.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`,
+          url: `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/${data.heroLogoImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`,
           width: 1200,
           height: 630,
-          alt: data.heroTitle || 'Sweet No. 13',
+          alt: data.heroLogoImage.alt || data.heroTitle || 'Sweet No. 13',
         },
       ] : undefined,
     },
@@ -178,7 +166,7 @@ export default async function Home() {
           '@type': 'LocalBusiness',
           name: 'Sweet No. 13',
           description: data.heroSubtitle || 'Custom decorated cookies and sweet treats',
-          image: data.heroImageDesktop?.asset ? `https://cdn.sanity.io/images/${projectId}/${dataset}/${data.heroImageDesktop.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}` : undefined,
+          image: data.heroLogoImage?.asset ? `https://cdn.sanity.io/images/${projectId}/${dataset}/${data.heroLogoImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}` : undefined,
           url: siteUrl,
           address: {
             '@type': 'PostalAddress',
@@ -194,8 +182,6 @@ export default async function Home() {
       />
       <div>
         <Hero
-          heroImageDesktop={data.heroImageDesktop}
-          heroImageMobile={data.heroImageMobile}
           heroLogoImage={data.heroLogoImage}
           heroTitle={data.heroTitle || 'Welcome'}
           heroSubtitle={data.heroSubtitle || 'Sweet No. 13'}
