@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import { Playfair_Display } from 'next/font/google'
+
+// Revalidate layout every 5 minutes (for site settings in footer/header)
+export const revalidate = 300
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
