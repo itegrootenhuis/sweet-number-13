@@ -152,7 +152,8 @@ export default function ContactForm() {
           type="date"
           id="dateNeeded"
           {...register('dateNeeded')}
-          className="w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+          className="w-full max-w-full px-4 py-2 border border-brand-muted rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent box-border text-base [&::-webkit-date-and-time-value]:text-left [&::-webkit-calendar-picker-indicator]:opacity-100"
+          style={{ WebkitAppearance: 'none', minHeight: '44px' }}
         />
         {errors.dateNeeded && (
           <p className="mt-1 text-sm text-red-500">{errors.dateNeeded.message}</p>

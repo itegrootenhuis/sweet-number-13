@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Playfair_Display } from 'next/font/google'
 
 // Revalidate layout every 5 minutes (for site settings in footer/header)
@@ -18,6 +18,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sweetno13.com'
 const siteName = 'Sweet No. 13'
 const defaultDescription = 'Custom decorated cookies and sweet treats. Order your personalized cookies for any occasion. Operates under Michigan\'s Cottage Food Laws.'
 
+// Explicit viewport configuration for better mobile SEO
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#9FEAF0' },
+    { media: '(prefers-color-scheme: dark)', color: '#9FEAF0' },
+  ],
+  colorScheme: 'light',
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -25,7 +37,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteName}`,
   },
   description: defaultDescription,
-  keywords: ['custom cookies', 'decorated cookies', 'cookie orders', 'Michigan', 'cottage food', 'personalized cookies', 'sweet treats'],
+  keywords: ['custom cookies', 'decorated cookies', 'cookie orders', 'Michigan', 'cottage food', 'personalized cookies', 'sweet treats', 'custom cookie design', 'birthday cookies', 'wedding cookies', 'party cookies'],
   authors: [{ name: siteName }],
   creator: siteName,
   publisher: siteName,
@@ -33,6 +45,9 @@ export const metadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
+  },
+  alternates: {
+    canonical: siteUrl,
   },
   openGraph: {
     type: 'website',
@@ -43,10 +58,10 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: siteName,
+        alt: `${siteName} - Custom Decorated Cookies`,
       },
     ],
   },
@@ -54,7 +69,10 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: siteName,
     description: defaultDescription,
-    images: ['/og-image.jpg'],
+    images: ['/opengraph-image'],
+    // Add Twitter handles if available
+    // creator: '@sweetnumber13',
+    // site: '@sweetnumber13',
   },
   robots: {
     index: true,
@@ -68,11 +86,27 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icon-192x192', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512x512', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon', sizes: '180x180', type: 'image/png' },
+    ],
   },
-  manifest: '/site.webmanifest',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: siteName,
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#9FEAF0',
+    'msapplication-config': '/browserconfig.xml',
+  },
 }
 
 export default function RootLayout({

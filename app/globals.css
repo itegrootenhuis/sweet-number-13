@@ -34,3 +34,35 @@ body {
 .prose strong {
   @apply text-brand-text font-semibold;
 }
+
+/* Safari mobile form fixes */
+input,
+select,
+textarea {
+  font-size: 16px; /* Prevents Safari zoom on focus */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Safari date input fixes */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 44px; /* iOS touch target size */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+/* Ensure inputs don't overflow on mobile */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}

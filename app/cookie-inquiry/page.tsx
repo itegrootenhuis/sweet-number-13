@@ -33,7 +33,10 @@ export async function generateMetadata(): Promise<Metadata> {
   
   return {
     title: 'Cookie Inquiry',
-    description: 'Order custom decorated cookies from Sweet No. 13 for your special occasion.',
+    description: 'Order custom decorated cookies from Sweet No. 13 for your special occasion. Request a quote for birthdays, weddings, baby showers, and more.',
+    alternates: {
+      canonical: `${siteUrl}/cookie-inquiry`,
+    },
     openGraph: {
       title: 'Cookie Inquiry | Sweet No. 13',
       description: 'Order custom decorated cookies for your special occasion',
@@ -61,6 +64,27 @@ export default async function CookieInquiryPage() {
             name: 'Sweet No. 13',
             url: siteUrl,
           },
+        }}
+      />
+      <StructuredData
+        type="BreadcrumbList"
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: siteUrl,
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Cookie Inquiry',
+              item: `${siteUrl}/cookie-inquiry`,
+            },
+          ],
         }}
       />
       <section className="bg-brand-coral py-12">

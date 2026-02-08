@@ -121,9 +121,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: data?.heroTitle ? `${data.heroTitle} | Sweet No. 13` : 'Sweet No. 13 - Custom Decorated Cookies',
     description: data?.heroSubtitle || 'Custom decorated cookies and sweet treats. Order your personalized cookies for any occasion.',
+    alternates: {
+      canonical: siteUrl,
+    },
     openGraph: {
       title: data?.heroTitle || 'Sweet No. 13',
       description: data?.heroSubtitle || 'Custom decorated cookies and sweet treats',
+      url: siteUrl,
       images: data?.heroLogoImage?.asset ? [
         {
           url: `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/${data.heroLogoImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`,
@@ -167,20 +171,63 @@ export default async function Home() {
         data={{
           '@context': 'https://schema.org',
           '@type': 'LocalBusiness',
+          '@id': `${siteUrl}/#localbusiness`,
           name: 'Sweet No. 13',
-          description: data.heroSubtitle || 'Custom decorated cookies and sweet treats',
-          image: data.heroLogoImage?.asset ? `https://cdn.sanity.io/images/${projectId}/${dataset}/${data.heroLogoImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}` : undefined,
+          description: data.heroSubtitle || 'Custom decorated cookies and sweet treats. Handcrafted personalized cookies for birthdays, weddings, baby showers, and special occasions. Operating under Michigan Cottage Food Laws.',
+          image: data.heroLogoImage?.asset ? `https://cdn.sanity.io/images/${projectId}/${dataset}/${data.heroLogoImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}` : `${siteUrl}/og-image.png`,
           url: siteUrl,
+          email: 'sweetnumber13@gmail.com',
           address: {
             '@type': 'PostalAddress',
             addressRegion: 'MI',
             addressCountry: 'US',
           },
-          areaServed: {
-            '@type': 'State',
-            name: 'Michigan',
-          },
+          areaServed: [
+            {
+              '@type': 'State',
+              name: 'Michigan',
+            },
+          ],
           priceRange: '$$',
+          currenciesAccepted: 'USD',
+          paymentAccepted: 'Cash, Credit Card, Venmo, PayPal',
+          knowsAbout: [
+            'Custom decorated cookies',
+            'Royal icing cookies',
+            'Birthday cookies',
+            'Wedding cookies',
+            'Baby shower cookies',
+            'Holiday cookies',
+            'Corporate event cookies',
+          ],
+          hasOfferCatalog: {
+            '@type': 'OfferCatalog',
+            name: 'Custom Cookie Services',
+            itemListElement: [
+              {
+                '@type': 'Offer',
+                itemOffered: {
+                  '@type': 'Service',
+                  name: 'Custom Decorated Cookies',
+                  description: 'Handcrafted decorated sugar cookies for any occasion',
+                },
+              },
+            ],
+          },
+        }}
+      />
+      <StructuredData
+        type="WebSite"
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          '@id': `${siteUrl}/#website`,
+          name: 'Sweet No. 13',
+          url: siteUrl,
+          description: 'Custom decorated cookies and sweet treats in Michigan',
+          publisher: {
+            '@id': `${siteUrl}/#localbusiness`,
+          },
         }}
       />
       <div>
